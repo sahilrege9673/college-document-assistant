@@ -109,15 +109,23 @@ def evaluate_with_fallback(test_data: List[Dict[str, str]]):
 def main():
     parser = argparse.ArgumentParser(description="Evaluate Intent Classifier on Test Split")
     parser.add_argument("--adapter_dir", type=str, default=os.path.join(os.path.dirname(__file__), "lora_adapter"))
-    parser.add_argument("--test_file", type=str, default=os.path.join(os.path.dirname(__file__), "processed", "test.jsonl"))
+    default_test = os.path.join(os.path.dirname(__file__), "processed", "test.jsonl")
+    parser.add_argument("--test_file", type=str, default=default_test)
     parser.add_argument("--mode", type=str, choices=["lora", "fallback"], default="fallback")
     args = parser.parse_args()
 
-    if not os.path.exists(args.test_file):
+    candidates = [
+        args.test_file,
+        os.path.join(os.getcwd(), "processed", "test.jsonl"),
+        "/content/processed/test.jsonl",
+        "/content/fine_tuning/processed/test.jsonl",
+    ]
+    actual_test_file = next((p for p in candidates if os.path.exists(p)), None)
+    if not actual_test_file:
         print(f"Error: Test file not found at {args.test_file}. Run prepare_dataset.py first.")
         sys.exit(1)
 
-    test_data = load_test_data(args.test_file)
+    test_data = load_test_data(actual_test_file)
     print(f"Loaded {len(test_data)} holdout test examples.")
 
     if args.mode == "lora" and os.path.exists(args.adapter_dir):

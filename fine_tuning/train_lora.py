@@ -77,6 +77,9 @@ def auto_prepare_dataset_if_missing(data_dir: str):
         os.path.join(os.path.dirname(__file__), "dataset.jsonl"),
         os.path.join(os.getcwd(), "dataset.jsonl"),
         "/content/dataset.jsonl",
+        "/content/fine_tuning/dataset.jsonl",
+        os.path.join(os.path.dirname(data_dir), "dataset.jsonl"),
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "dataset.jsonl"),
     ]
     raw_path = None
     for p in candidates:

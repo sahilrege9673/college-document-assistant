@@ -93,8 +93,14 @@ def save_jsonl(records: List[Dict[str, str]], output_path: str) -> None:
 
 def main() -> None:
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    input_file = os.path.join(base_dir, "dataset.jsonl")
-    data_dir = os.path.join(base_dir, "processed")
+    candidates = [
+        os.path.join(base_dir, "dataset.jsonl"),
+        os.path.join(os.getcwd(), "dataset.jsonl"),
+        "/content/dataset.jsonl",
+        "/content/fine_tuning/dataset.jsonl",
+    ]
+    input_file = next((p for p in candidates if os.path.exists(p)), os.path.join(base_dir, "dataset.jsonl"))
+    data_dir = os.path.join(base_dir, "processed") if os.path.exists(base_dir) else os.path.join(os.getcwd(), "processed")
     os.makedirs(data_dir, exist_ok=True)
 
     print(f"Loading raw dataset from: {input_file}")

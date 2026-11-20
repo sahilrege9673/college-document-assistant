@@ -1,0 +1,10 @@
+{
+  "syllabus_question": 0,
+  "exam_question": 1,
+  "assignment_question": 2,
+  "attendance_question": 3,
+  "fee_question": 4,
+  "hostel_question": 5,
+  "general_college_question": 6,
+  "irrelevant_question": 7
+}

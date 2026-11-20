@@ -1,0 +1,136 @@
+{"text": "What is the fine for late payment of semester tuition after two weeks?", "label": "fee_question"}
+{"text": "Can we use GitHub repositories for submitting our programming assignments?", "label": "assignment_question"}
+{"text": "What is the distance between the earth and the moon in kilometers?", "label": "irrelevant_question"}
+{"text": "What topics can we choose from for the semester presentation assignment?", "label": "assignment_question"}
+{"text": "What is the penalty for ragging or bullying inside the hostel premises?", "label": "hostel_question"}
+{"text": "How can I borrow books from the digital central library?", "label": "general_college_question"}
+{"text": "Who is the controller of examinations in our college?", "label": "exam_question"}
+{"text": "Where can students check their daily subject-wise attendance percentage?", "label": "attendance_question"}
+{"text": "Can two students submit the same code with different comments?", "label": "assignment_question"}
+{"text": "Where should we submit our weekly coding assignments online?", "label": "assignment_question"}
+{"text": "What topics will be taught in the second half of the semester for Physics?", "label": "syllabus_question"}
+{"text": "What is the plagiarism threshold allowed for assignment submissions?", "label": "assignment_question"}
+{"text": "Can you help me solve this algebra equation x squared plus 5x equals 6?", "label": "irrelevant_question"}
+{"text": "Can late assignments be accepted with a deduction of 2 marks per day?", "label": "assignment_question"}
+{"text": "Does the algorithms syllabus include NP-complete problems?", "label": "syllabus_question"}
+{"text": "What is the required format and font size for the technical seminar report?", "label": "assignment_question"}
+{"text": "Who is the teaching assistant responsible for grading Lab Assignment 3?", "label": "assignment_question"}
+{"text": "How do I connect my laptop to the campus eduroam Wi-Fi network?", "label": "general_college_question"}
+{"text": "What documents or ID cards are required to enter the examination hall?", "label": "exam_question"}
+{"text": "When will the results of the 3rd semester exams be published?", "label": "exam_question"}
+{"text": "What is the weightage of internal assessments versus final exams?", "label": "exam_question"}
+{"text": "Can semester fees be paid in multiple monthly installments?", "label": "fee_question"}
+{"text": "Is graph theory included in the discrete mathematics syllabus?", "label": "syllabus_question"}
+{"text": "Who is the chief warden of the boys hostel and what are their contact hours?", "label": "hostel_question"}
+{"text": "How is proxy attendance penalized under college disciplinary rules?", "label": "attendance_question"}
+{"text": "How many unexcused absences lead to a warning letter sent to parents?", "label": "attendance_question"}
+{"text": "Explain quantum computing and how qubits operate.", "label": "irrelevant_question"}
+{"text": "What is the recipe for making Italian pasta?", "label": "irrelevant_question"}
+{"text": "Where is the accounts department located to submit fee demand drafts?", "label": "fee_question"}
+{"text": "Do we need faculty signatures on each page of the assignment?", "label": "assignment_question"}
+{"text": "Can you recommend some good sci-fi movies to watch tonight?", "label": "irrelevant_question"}
+{"text": "Can I apply for re-evaluation or photocopy of my answer sheet?", "label": "exam_question"}
+{"text": "What is the maximum time duration for the supplementary examinations?", "label": "exam_question"}
+{"text": "Is a rubric provided for grading the database design assignment?", "label": "assignment_question"}
+{"text": "What is the due date for submitting the lab observation notebook?", "label": "assignment_question"}
+{"text": "What are the submission guidelines for the mini-project report?", "label": "assignment_question"}
+{"text": "What is the security protocol and visitor registration rule at hostel gates?", "label": "hostel_question"}
+{"text": "What are the college cafeteria operating hours and hygiene guidelines?", "label": "general_college_question"}
+{"text": "Where is the lost and found desk located on the college campus?", "label": "general_college_question"}
+{"text": "Within how many days must a medical certificate be submitted after returning?", "label": "attendance_question"}
+{"text": "What is the minimum percentage of attendance required to sit for exams?", "label": "attendance_question"}
+{"text": "Who painted the Mona Lisa painting in the Louvre museum?", "label": "irrelevant_question"}
+{"text": "What are the operating hours of the college gymnasium and sports complex?", "label": "general_college_question"}
+{"text": "How is the SGPA and CGPA calculated in the grading system?", "label": "exam_question"}
+{"text": "How can I get a student ID card replacement if lost?", "label": "general_college_question"}
+{"text": "Where is the college health center or dispensary located?", "label": "general_college_question"}
+{"text": "Where is the hostel medical clinic located for emergency first aid?", "label": "hostel_question"}
+{"text": "How do I change the oil in a car engine?", "label": "irrelevant_question"}
+{"text": "What are the convocation and graduation certificate fees?", "label": "fee_question"}
+{"text": "How can I rectify an incorrect absence marked by a faculty member?", "label": "attendance_question"}
+{"text": "Is neural networks covered in semester 6 or semester 7?", "label": "syllabus_question"}
+{"text": "What are the passing marks out of 100 for theoretical subjects?", "label": "exam_question"}
+{"text": "Is there any financial aid or fee concession for university top rankers?", "label": "fee_question"}
+{"text": "Where is the campus anti-ragging committee office located?", "label": "general_college_question"}
+{"text": "Can you write an essay about the history of the Roman empire?", "label": "irrelevant_question"}
+{"text": "How many internal assessment tests are conducted in each semester?", "label": "exam_question"}
+{"text": "How many units are there in the Machine Learning subject?", "label": "syllabus_question"}
+{"text": "Which chapters of the prescribed textbook are covered in Unit 4?", "label": "syllabus_question"}
+{"text": "Is there a fee waiver or scholarship for economically weaker students?", "label": "fee_question"}
+{"text": "Are extensions granted for assignments if submitted with medical proof?", "label": "assignment_question"}
+{"text": "What are the library operating hours on weekdays and weekends?", "label": "general_college_question"}
+{"text": "Tell me a funny joke about software developers.", "label": "irrelevant_question"}
+{"text": "How do I apply for a bonafide student certificate for passport verification?", "label": "general_college_question"}
+{"text": "Is Python programming taught in the first semester syllabus?", "label": "syllabus_question"}
+{"text": "What is the weather forecast for New York this weekend?", "label": "irrelevant_question"}
+{"text": "How many books can an undergraduate student issue at one time?", "label": "general_college_question"}
+{"text": "Can fine be paid to compensate for low attendance in college?", "label": "attendance_question"}
+{"text": "Who is the head of the placement and training cell?", "label": "general_college_question"}
+{"text": "What is the fee for issuing a migration or character certificate?", "label": "fee_question"}
+{"text": "What are the mess timings for breakfast, lunch, snacks, and dinner?", "label": "hostel_question"}
+{"text": "When does the college reopen for the odd semester classes?", "label": "general_college_question"}
+{"text": "What are the rules regarding malpractice and cheating in exam halls?", "label": "exam_question"}
+{"text": "How do I report a plumbing or electrical maintenance issue in my room?", "label": "hostel_question"}
+{"text": "What is the question paper pattern for the semester exams?", "label": "exam_question"}
+{"text": "Who founded Microsoft and in which year?", "label": "irrelevant_question"}
+{"text": "What is the fee structure for bus transportation and college commuting?", "label": "fee_question"}
+{"text": "Are international students charged a different tuition fee structure?", "label": "fee_question"}
+{"text": "Can day scholars visit the hostel rooms during college hours?", "label": "hostel_question"}
+{"text": "What happens if a student returns after the 9:30 PM hostel curfew?", "label": "hostel_question"}
+{"text": "Are sorting algorithms part of the practical syllabus?", "label": "syllabus_question"}
+{"text": "Can we submit handwritten assignments scanned as PDF?", "label": "assignment_question"}
+{"text": "What is the attendance weightage in the continuous internal evaluation?", "label": "attendance_question"}
+{"text": "When is the annual college cultural and sports festival scheduled?", "label": "general_college_question"}
+{"text": "Can non-vegetarian food be ordered to the hostel from outside restaurants?", "label": "hostel_question"}
+{"text": "What is the daily late fine fee for delayed tuition payments?", "label": "fee_question"}
+{"text": "Is the caution deposit refundable after graduating from college?", "label": "fee_question"}
+{"text": "What is the course code and credit weightage for Database Management Systems?", "label": "syllabus_question"}
+{"text": "Who approves duty leaves for cultural fest participation?", "label": "attendance_question"}
+{"text": "What is the curfew timing for entering the college hostel at night?", "label": "hostel_question"}
+{"text": "Are students detained for a year if attendance is under 50 percent?", "label": "attendance_question"}
+{"text": "What is the penalty for late submission of lab assignments?", "label": "assignment_question"}
+{"text": "Does attendance count if a student arrives 10 minutes late to class?", "label": "attendance_question"}
+{"text": "What is the bank account detail or UPI ID for paying college fees?", "label": "fee_question"}
+{"text": "What are the rules regarding overnight leave passes from the hostel?", "label": "hostel_question"}
+{"text": "Can you give me the syllabus for Computer Networks semester 4?", "label": "syllabus_question"}
+{"text": "What is the total mark allocation for the final year capstone viva?", "label": "exam_question"}
+{"text": "Is attendance compulsory for remedial and bridge courses?", "label": "attendance_question"}
+{"text": "Is high-speed Wi-Fi provided in all hostel blocks?", "label": "hostel_question"}
+{"text": "When are the dates for the mid-term examinations announced?", "label": "exam_question"}
+{"text": "How many days of absence are permitted for attending sports competitions?", "label": "attendance_question"}
+{"text": "What are the quiet study hours enforced in hostel corridors?", "label": "hostel_question"}
+{"text": "When is the last date to pay the semester fee without a late fine?", "label": "fee_question"}
+{"text": "Are cooking appliances strictly prohibited in student bedrooms?", "label": "hostel_question"}
+{"text": "How does photosynthesis work in green plants?", "label": "irrelevant_question"}
+{"text": "What is the examination registration fee per paper for backlog exams?", "label": "fee_question"}
+{"text": "What is the procedure to apply for improvement examination?", "label": "exam_question"}
+{"text": "Can parents view attendance records on the student portal?", "label": "attendance_question"}
+{"text": "Who approves the night-out pass requested by women hostel residents?", "label": "hostel_question"}
+{"text": "When is the deadline to submit Assignment 2 for Operating Systems?", "label": "assignment_question"}
+{"text": "What are the best tourist places to visit in Japan during spring?", "label": "irrelevant_question"}
+{"text": "Are attendance shortages published on the departmental notice board?", "label": "attendance_question"}
+{"text": "Write a short fictional story about an astronaut lost in space.", "label": "irrelevant_question"}
+{"text": "Do assignments carry 10 marks or 20 marks in the internal assessment?", "label": "assignment_question"}
+{"text": "Who should I contact to book the main auditorium for a club workshop?", "label": "general_college_question"}
+{"text": "Can you list all the experiments for the Chemistry laboratory course?", "label": "syllabus_question"}
+{"text": "What is the lab syllabus for the microprocessors course?", "label": "syllabus_question"}
+{"text": "Who is the current prime minister of the United Kingdom?", "label": "irrelevant_question"}
+{"text": "What are the topics in Module 1 for Cloud Computing?", "label": "syllabus_question"}
+{"text": "What is the process to apply for government merit-cum-means scholarship?", "label": "fee_question"}
+{"text": "How can I obtain a hostel vacate and caution deposit clearance form?", "label": "hostel_question"}
+{"text": "What are the prerequisites mentioned in the syllabus for Advanced Java?", "label": "syllabus_question"}
+{"text": "Does the Cyber Security course cover ethical hacking tools?", "label": "syllabus_question"}
+{"text": "Is grace marking allowed under university examination regulations?", "label": "exam_question"}
+{"text": "What is the stock price of Tesla today?", "label": "irrelevant_question"}
+{"text": "Where is the seating arrangement for tomorrow's mid-term examination posted?", "label": "exam_question"}
+{"text": "What is the total tuition fee for the current academic year?", "label": "fee_question"}
+{"text": "Can education loans directly disburse fees to the college account?", "label": "fee_question"}
+{"text": "Does the Web Development curriculum include React or Vue?", "label": "syllabus_question"}
+{"text": "What is the procedure to change hostel rooms during the semester?", "label": "hostel_question"}
+{"text": "Which textbooks are recommended for Engineering Mathematics 1?", "label": "syllabus_question"}
+{"text": "Can medical leave be counted towards the 75 percent attendance rule?", "label": "attendance_question"}
+{"text": "Is attendance marked separately for theory classes and laboratory sessions?", "label": "attendance_question"}
+{"text": "What is the fee for appearing in the backlog supplementary exam?", "label": "exam_question"}
+{"text": "Where can I find the official academic calendar for the current year?", "label": "general_college_question"}
+{"text": "What is cryptocurrency and how does Bitcoin mining work?", "label": "irrelevant_question"}
+{"text": "How do I join the National Cadet Corps or National Service Scheme unit?", "label": "general_college_question"}

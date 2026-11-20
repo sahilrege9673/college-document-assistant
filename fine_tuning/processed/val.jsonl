@@ -1,0 +1,24 @@
+{"text": "How many marks are required to clear the practical lab examination?", "label": "exam_question"}
+{"text": "How is laundry and dry cleaning managed inside the residential campus?", "label": "hostel_question"}
+{"text": "What is the process to apply for attendance condonation due to sickness?", "label": "attendance_question"}
+{"text": "Are case studies included in the Software Engineering course curriculum?", "label": "syllabus_question"}
+{"text": "Are group submissions allowed for the web development project?", "label": "assignment_question"}
+{"text": "How do I bake a chocolate cake at home without an oven?", "label": "irrelevant_question"}
+{"text": "Is the hostel open during summer vacation and winter semester breaks?", "label": "hostel_question"}
+{"text": "Is smoking or alcohol consumption banned across all college grounds?", "label": "general_college_question"}
+{"text": "Can I pay the college fee through net banking or credit card?", "label": "fee_question"}
+{"text": "What is the monthly mess fee and does it include weekend meals?", "label": "hostel_question"}
+{"text": "What is the policy for students participating in inter-college sports?", "label": "general_college_question"}
+{"text": "Which edition of Tanenbaum is recommended for Computer Networks?", "label": "syllabus_question"}
+{"text": "Is dynamic programming part of the syllabus for the mid-term test?", "label": "syllabus_question"}
+{"text": "What clubs and technical student societies are active on campus?", "label": "general_college_question"}
+{"text": "What is the minimum grade point average required to avoid academic probation?", "label": "exam_question"}
+{"text": "What is the annual sports and cultural activity fee charged to students?", "label": "fee_question"}
+{"text": "What is the minimum attendance required for scholarship eligibility?", "label": "attendance_question"}
+{"text": "How many attempts are allowed to clear a backlog subject?", "label": "exam_question"}
+{"text": "How much fee is refunded if a student cancels admission in the first month?", "label": "fee_question"}
+{"text": "Where can I download the assignment problem statement document?", "label": "assignment_question"}
+{"text": "How many assignments are mandatory to qualify for internal marks?", "label": "assignment_question"}
+{"text": "What happens if my aggregate attendance falls below 65 percent?", "label": "attendance_question"}
+{"text": "What is the latest score in the cricket test match?", "label": "irrelevant_question"}
+{"text": "Can you translate hello how are you into German and Spanish?", "label": "irrelevant_question"}

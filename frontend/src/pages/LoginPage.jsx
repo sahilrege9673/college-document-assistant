@@ -39,7 +39,7 @@ export default function LoginPage() {
 
   const fillDemoAdmin = () => {
     setEmail('admin@college.edu');
-    setPassword('AdminSecurePass2026!');
+    setPassword('admin123');
   };
 
   const fillDemoStudent = () => {
@@ -144,6 +144,19 @@ export default function LoginPage() {
               <KeyRound className="w-3.5 h-3.5" />
               <span>Fill Admin Demo Credentials</span>
             </button>
+          </div>
+
+          {/* Quick Credentials Cheatsheet */}
+          <div className="mt-4 p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-xs space-y-1 text-slate-600">
+            <p className="font-semibold text-slate-700">Quick Test Credentials:</p>
+            <div className="flex justify-between items-center text-[11px]">
+              <span>Student: <code className="text-emerald-700 font-mono">student@college.edu</code></span>
+              <span>Pass: <code className="text-emerald-700 font-mono">student123</code></span>
+            </div>
+            <div className="flex justify-between items-center text-[11px]">
+              <span>Admin: <code className="text-brand-700 font-mono">admin@college.edu</code></span>
+              <span>Pass: <code className="text-brand-700 font-mono">admin123</code></span>
+            </div>
           </div>
 
           <div className="mt-4 text-center text-xs text-slate-500">

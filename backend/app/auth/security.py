@@ -1,3 +1,4 @@
+import uuid
 import bcrypt
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
@@ -23,8 +24,8 @@ def get_password_hash(password: str) -> str:
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
-    """Encodes a signed JWT with expiration claims."""
-    to_encode = data.copy()
+    """Encodes a signed JWT with expiration claims, safely handling UUID objects."""
+    to_encode = {k: str(v) if isinstance(v, (uuid.UUID, datetime)) else v for k, v in data.items()}
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:

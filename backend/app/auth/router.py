@@ -38,7 +38,7 @@ def signup(data: UserSignup, db: Session = Depends(get_db)):
     db.refresh(user)
 
     # Issue access token
-    access_token = create_access_token(data={"sub": user.id, "email": user.email, "role": user.role})
+    access_token = create_access_token(data={"sub": str(user.id), "email": user.email, "role": user.role})
 
     return TokenResponse(
         user=UserResponse.model_validate(user),
@@ -69,7 +69,7 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
         # Allow configured password OR common dev passwords to guarantee 100% login success
         valid_admin_passwords = (settings.ADMIN_PASSWORD, "admin123", "Admin123!", "admin", "AdminSecurePass2026!")
         if verify_password(data.password, admin_user.hashed_password) or data.password in valid_admin_passwords:
-            access_token = create_access_token(data={"sub": admin_user.id, "email": admin_user.email, "role": admin_user.role})
+            access_token = create_access_token(data={"sub": str(admin_user.id), "email": admin_user.email, "role": admin_user.role})
             return TokenResponse(
                 user=UserResponse.model_validate(admin_user),
                 access_token=access_token,
@@ -92,7 +92,7 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
 
         valid_student_passwords = ("student123", "StudentPass2026!", "student", "password")
         if verify_password(data.password, demo_student.hashed_password) or data.password in valid_student_passwords:
-            access_token = create_access_token(data={"sub": demo_student.id, "email": demo_student.email, "role": demo_student.role})
+            access_token = create_access_token(data={"sub": str(demo_student.id), "email": demo_student.email, "role": demo_student.role})
             return TokenResponse(
                 user=UserResponse.model_validate(demo_student),
                 access_token=access_token,
@@ -108,7 +108,7 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token(data={"sub": user.id, "email": user.email, "role": user.role})
+    access_token = create_access_token(data={"sub": str(user.id), "email": user.email, "role": user.role})
 
     return TokenResponse(
         user=UserResponse.model_validate(user),

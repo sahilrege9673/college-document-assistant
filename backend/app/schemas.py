@@ -1,6 +1,21 @@
+import uuid
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+
+# ==============================================================================
+# BASE SCHEMA (AUTO-CONVERTS UUID TO STR & SUPPORTS ORM)
+# ==============================================================================
+class AppBaseModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def convert_uuids(cls, v):
+        if isinstance(v, uuid.UUID):
+            return str(v)
+        return v
 
 
 # ==============================================================================
@@ -17,18 +32,15 @@ class UserLogin(BaseModel):
     password: str
 
 
-class UserResponse(BaseModel):
+class UserResponse(AppBaseModel):
     id: str
     full_name: str
     email: str
     role: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
 
-
-class TokenResponse(BaseModel):
+class TokenResponse(AppBaseModel):
     user: UserResponse
     access_token: str
     token_type: str = "bearer"
@@ -37,7 +49,7 @@ class TokenResponse(BaseModel):
 # ==============================================================================
 # DOCUMENT SCHEMAS
 # ==============================================================================
-class DocumentResponse(BaseModel):
+class DocumentResponse(AppBaseModel):
     id: str
     file_name: str
     file_size: int
@@ -47,11 +59,8 @@ class DocumentResponse(BaseModel):
     error_message: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
 
-
-class DocumentStatusResponse(BaseModel):
+class DocumentStatusResponse(AppBaseModel):
     id: str
     file_name: str
     status: str
@@ -62,7 +71,7 @@ class DocumentStatusResponse(BaseModel):
 # ==============================================================================
 # CHAT & RAG SCHEMAS
 # ==============================================================================
-class SourceItem(BaseModel):
+class SourceItem(AppBaseModel):
     document_name: str
     page_number: Optional[int] = 1
     chunk_preview: str
@@ -72,13 +81,13 @@ class AskQuestionRequest(BaseModel):
     question: str = Field(..., min_length=2, max_length=1000)
 
 
-class AskQuestionResponse(BaseModel):
+class AskQuestionResponse(AppBaseModel):
     answer: str
     detected_intent: str
     sources: List[SourceItem]
 
 
-class ChatMessageResponse(BaseModel):
+class ChatMessageResponse(AppBaseModel):
     id: str
     role: str
     content: str
@@ -86,39 +95,30 @@ class ChatMessageResponse(BaseModel):
     sources: List[SourceItem] = []
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class ChatSessionCreate(BaseModel):
     title: Optional[str] = "New Conversation"
 
 
-class ChatSessionResponse(BaseModel):
+class ChatSessionResponse(AppBaseModel):
     id: str
     title: str
     created_at: datetime
     updated_at: datetime
     message_count: Optional[int] = 0
 
-    class Config:
-        from_attributes = True
 
-
-class ChatDetailResponse(BaseModel):
+class ChatDetailResponse(AppBaseModel):
     id: str
     title: str
     created_at: datetime
     messages: List[ChatMessageResponse]
 
-    class Config:
-        from_attributes = True
-
 
 # ==============================================================================
 # ADMIN SCHEMAS
 # ==============================================================================
-class AdminStatsResponse(BaseModel):
+class AdminStatsResponse(AppBaseModel):
     total_users: int
     total_documents: int
     total_chunks: int
@@ -126,7 +126,7 @@ class AdminStatsResponse(BaseModel):
     total_questions: int
 
 
-class AdminDocumentItem(BaseModel):
+class AdminDocumentItem(AppBaseModel):
     id: str
     file_name: str
     file_size: int
@@ -141,7 +141,7 @@ class AdminDocumentItem(BaseModel):
 # ==============================================================================
 # SYSTEM SCHEMAS
 # ==============================================================================
-class HealthResponse(BaseModel):
+class HealthResponse(AppBaseModel):
     status: str
     database: str
     classifier_mode: str

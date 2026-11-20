@@ -91,7 +91,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     origin = request.headers.get("origin", "*")
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "An internal server error occurred. Please verify backend database connectivity."},
+        content={"detail": f"Server error ({type(exc).__name__}): {str(exc)}"},
         headers={
             "Access-Control-Allow-Origin": origin if origin else "*",
             "Access-Control-Allow-Credentials": "true",

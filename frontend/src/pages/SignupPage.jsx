@@ -50,7 +50,12 @@ export default function SignupPage() {
       await signup(fullName, email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      const msg =
+        err.response?.data?.detail ||
+        (err.message === 'Network Error'
+          ? 'Cannot connect to the backend server. Please verify the backend is running on http://localhost:8000.'
+          : err.message || 'Registration failed. Please try again.');
+      setError(msg);
     } finally {
       setLoading(false);
     }

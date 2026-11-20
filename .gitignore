@@ -1,4 +1,12 @@
-# Environment variables
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and local credentials
+Passwords/
+*.key
+*.pem
 .env
 .env.local
 *.env

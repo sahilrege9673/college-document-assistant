@@ -26,7 +26,12 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid email or password.');
+      const msg =
+        err.response?.data?.detail ||
+        (err.message === 'Network Error'
+          ? 'Cannot connect to the backend server. Please verify the backend is running on http://localhost:8000.'
+          : err.message || 'Invalid email or password.');
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -35,6 +40,11 @@ export default function LoginPage() {
   const fillDemoAdmin = () => {
     setEmail('admin@college.edu');
     setPassword('AdminSecurePass2026!');
+  };
+
+  const fillDemoStudent = () => {
+    setEmail('student@college.edu');
+    setPassword('student123');
   };
 
   return (
@@ -116,8 +126,16 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo Admin Fill */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
+          {/* Demo Credentials Fast-Fill */}
+          <div className="mt-6 pt-5 border-t border-slate-100 space-y-2">
+            <button
+              type="button"
+              onClick={fillDemoStudent}
+              className="w-full py-2 px-3 text-xs font-medium text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors flex items-center justify-center space-x-1.5"
+            >
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>Fill Student Demo Credentials (Alex)</span>
+            </button>
             <button
               type="button"
               onClick={fillDemoAdmin}

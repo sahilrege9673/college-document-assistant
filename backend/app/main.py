@@ -71,7 +71,14 @@ app = FastAPI(
 # Configure Cross-Origin Resource Sharing (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows local dev and deployed Vercel frontend
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://college-document-assistant.vercel.app",
+    ],
+    allow_origin_regex=r"^https?://.*",  # Dynamically permits any local, Vercel preview, or mobile origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -81,9 +88,16 @@ app.add_middleware(
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled error at {request.url.path}: {exc}", exc_info=True)
+    origin = request.headers.get("origin", "*")
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "An internal server error occurred. Please try again shortly."},
+        content={"detail": "An internal server error occurred. Please verify backend database connectivity."},
+        headers={
+            "Access-Control-Allow-Origin": origin if origin else "*",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        },
     )
 
 # Register Routers

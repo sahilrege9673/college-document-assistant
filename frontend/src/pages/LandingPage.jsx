@@ -77,7 +77,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-base font-semibold text-slate-900">Upload College PDFs</h3>
               <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                Upload your course syllabus, lecture slides, assignment briefs, exam circulars, and campus regulations (up to 10 MB).
+                Upload your course syllabus, lecture slides, scanned notes, assignment briefs, and exam circulars (up to 100 MB).
               </p>
             </div>
 

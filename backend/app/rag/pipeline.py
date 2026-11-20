@@ -50,7 +50,7 @@ class RAGPipeline:
             user_id=user_id,
             query_vector=query_vector,
             top_k=5,
-            threshold=0.20
+            threshold=0.12
         )
 
         # Handle queries with no relevant college documents found
@@ -73,8 +73,8 @@ class RAGPipeline:
                 "chunk_preview": content_preview,
             })
 
-        # If question is classified as completely irrelevant, skip external LLM call
-        if detected_intent == "irrelevant_question" and (not matched_chunks or matched_chunks[0]["similarity"] < 0.25):
+        # If question is classified as completely irrelevant, immediately return safe grounded refusal
+        if detected_intent == "irrelevant_question":
             return {
                 "answer": NOT_FOUND_MESSAGE,
                 "detected_intent": detected_intent,

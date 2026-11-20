@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { UploadCloud, File, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { documentsAPI } from '../../api/documents';
 import { formatBytes } from '../../utils/formatters';
+import { MAX_FILE_SIZE_MB, MAX_FILE_SIZE_BYTES } from '../../utils/constants';
 
 export default function Dropzone({ onUploadSuccess, onError }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -14,12 +15,12 @@ export default function Dropzone({ onUploadSuccess, onError }) {
     if (!file) return;
 
     if (!file.name.toLowerCase().endsWith('.pdf')) {
-      onError('Only PDF documents are allowed.');
+      onError('Only PDF documents are allowed (.pdf).');
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      onError(`File exceeds 10 MB limit (${formatBytes(file.size)}).`);
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      onError(`File exceeds ${MAX_FILE_SIZE_MB} MB limit (${formatBytes(file.size)}).`);
       return;
     }
 
@@ -32,7 +33,7 @@ export default function Dropzone({ onUploadSuccess, onError }) {
         if (e.total) {
           const percent = Math.round((e.loaded * 100) / e.total);
           setProgress(percent);
-          if (percent === 100) {
+          if (percent >= 100) {
             setStage('processing');
           }
         }
@@ -40,7 +41,7 @@ export default function Dropzone({ onUploadSuccess, onError }) {
 
       onUploadSuccess(doc);
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to process document.';
+      const msg = err.response?.data?.detail || 'Failed to upload document.';
       onError(msg);
     } finally {
       setUploading(false);
@@ -105,11 +106,11 @@ export default function Dropzone({ onUploadSuccess, onError }) {
             {uploading
               ? stage === 'uploading'
                 ? `Uploading PDF (${progress}%)`
-                : 'Extracting text & generating dense vector embeddings...'
-              : 'Click to upload or drag & drop a PDF'}
+                : 'Receiving file & scheduling background AI indexing...'
+              : 'Click to upload or drag & drop study materials'}
           </p>
           <p className="text-xs text-slate-400 mt-1">
-            Syllabus, lecture notes, question papers, or circulars (Max 10 MB)
+            Syllabi, lecture notes, textbook chapters, or scanned exam papers (Max {MAX_FILE_SIZE_MB} MB)
           </p>
         </div>
 

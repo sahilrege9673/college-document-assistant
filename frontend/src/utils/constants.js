@@ -41,6 +41,9 @@ export const INTENT_META = {
   },
 };
 
+export const MAX_FILE_SIZE_MB = 100;
+export const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
+
 export const SUGGESTED_QUESTIONS = [
   "What topics are included in Unit 2?",
   "When is the internal assessment?",

@@ -9,8 +9,31 @@ from sqlalchemy import (
     ForeignKey,
     JSON,
 )
+from sqlalchemy.types import TypeDecorator, CHAR
 from sqlalchemy.orm import relationship
 from app.database import Base
+
+
+class GUID(TypeDecorator):
+    """
+    Platform-independent GUID/UUID type.
+    Maps to PostgreSQL's native UUID with as_uuid=False (guaranteeing python strings),
+    and CHAR(36) for SQLite.
+    """
+    impl = CHAR
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql":
+            from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+            return dialect.type_descriptor(PG_UUID(as_uuid=False))
+        return dialect.type_descriptor(CHAR(36))
+
+    def process_bind_param(self, value, dialect):
+        return str(value) if value is not None else value
+
+    def process_result_value(self, value, dialect):
+        return str(value) if value is not None else value
 
 
 def generate_uuid() -> str:
@@ -24,7 +47,7 @@ def get_utc_now() -> datetime:
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(String(36), primary_key=True, default=generate_uuid)
+    id = Column(GUID, primary_key=True, default=generate_uuid)
     full_name = Column(String(100), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
@@ -39,8 +62,8 @@ class User(Base):
 class Document(Base):
     __tablename__ = "documents"
 
-    id = Column(String(36), primary_key=True, default=generate_uuid)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(GUID, primary_key=True, default=generate_uuid)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     file_name = Column(String(255), nullable=False)
     storage_path = Column(String(500), nullable=False)
     file_size = Column(Integer, nullable=False)
@@ -58,9 +81,9 @@ class Document(Base):
 class DocumentChunk(Base):
     __tablename__ = "document_chunks"
 
-    id = Column(String(36), primary_key=True, default=generate_uuid)
-    document_id = Column(String(36), ForeignKey("documents.id", ondelete="CASCADE"), nullable=False, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(GUID, primary_key=True, default=generate_uuid)
+    document_id = Column(GUID, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     chunk_index = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
     page_number = Column(Integer, default=1)
@@ -75,8 +98,8 @@ class DocumentChunk(Base):
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
 
-    id = Column(String(36), primary_key=True, default=generate_uuid)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(GUID, primary_key=True, default=generate_uuid)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     title = Column(String(255), default="New Conversation", nullable=False)
     created_at = Column(DateTime(timezone=True), default=get_utc_now)
     updated_at = Column(DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now)
@@ -89,9 +112,9 @@ class ChatSession(Base):
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
 
-    id = Column(String(36), primary_key=True, default=generate_uuid)
-    chat_session_id = Column(String(36), ForeignKey("chat_sessions.id", ondelete="CASCADE"), nullable=False, index=True)
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(GUID, primary_key=True, default=generate_uuid)
+    chat_session_id = Column(GUID, ForeignKey("chat_sessions.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(GUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     role = Column(String(20), nullable=False)  # 'user' or 'assistant'
     content = Column(Text, nullable=False)
     detected_intent = Column(String(50), nullable=True)

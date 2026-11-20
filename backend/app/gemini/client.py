@@ -81,5 +81,32 @@ class GeminiClient:
 
         return "I could not find this information in the uploaded college documents."
 
+    def extract_text_and_diagrams_from_image(self, image_bytes: bytes, mime_type: str = "image/png") -> str:
+        """
+        Uses Gemini Multimodal Vision to extract text, tables, formulas, and diagram
+        descriptions from scanned or photo pages of notes, syllabi, or exams.
+        """
+        if not self._configured:
+            return ""
+
+        try:
+            model = self.genai.GenerativeModel(self.model_name)
+            prompt = (
+                "Transcribe all printed text, handwritten notes, mathematical formulas, and tables "
+                "from this academic document page accurately. If there are diagrams, flowcharts, or architecture "
+                "drawings, summarize their labels, structure, and academic meaning concisely so this page "
+                "can be fully retrieved and cited by students."
+            )
+            response = model.generate_content([
+                {"mime_type": mime_type, "data": image_bytes},
+                prompt
+            ])
+            if response and response.text:
+                return response.text.strip()
+        except Exception as e:
+            logger.warning(f"Gemini multimodal OCR failed for page image: {e}")
+
+        return ""
+
 
 gemini_client = GeminiClient()

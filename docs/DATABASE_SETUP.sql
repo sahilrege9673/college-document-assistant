@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS documents (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     file_name VARCHAR(255) NOT NULL,
     storage_path VARCHAR(500) NOT NULL,
-    file_size INTEGER NOT NULL,            -- File size in bytes (max 10MB = 10,485,760 bytes)
+    file_size INTEGER NOT NULL,            -- File size in bytes (up to 100MB = 104,857,600 bytes)
     page_count INTEGER DEFAULT 0,
     chunk_count INTEGER DEFAULT 0,
     status VARCHAR(30) NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'ready', 'failed')),

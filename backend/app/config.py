@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     # RAG Chunker Specifications
     CHUNK_SIZE: int = 900
     CHUNK_OVERLAP: int = 120
-    MAX_FILE_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB limit
+    MAX_FILE_SIZE_BYTES: int = int(os.getenv("MAX_FILE_SIZE_BYTES", str(100 * 1024 * 1024)))  # Configurable: 100 MB limit
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -32,11 +32,28 @@ export default function DocumentsPage() {
     fetchDocuments();
   }, []);
 
+  // Real-time auto-polling: Polls if any document is being indexed in the background
+  useEffect(() => {
+    const hasProcessing = documents.some((d) => d.status === 'processing');
+    if (!hasProcessing) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const data = await documentsAPI.list();
+        setDocuments(data);
+      } catch {
+        // Silent catch during periodic background refresh
+      }
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [documents]);
+
   const handleUploadSuccess = (newDoc) => {
-    setDocuments((prev) => [newDoc, ...prev]);
+    setDocuments((prev) => [newDoc, ...prev.filter((d) => d.id !== newDoc.id)]);
     setToast({
-      message: `Document "${newDoc.file_name}" uploaded and indexed successfully!`,
-      type: 'success',
+      message: `"${newDoc.file_name}" uploaded successfully! Parsing text & vector citations in background...`,
+      type: 'info',
     });
   };
 

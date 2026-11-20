@@ -54,7 +54,7 @@ class VectorStoreService:
                         (1 - (dc.embedding <=> CAST(:query_vec AS vector))) AS similarity
                     FROM document_chunks dc
                     JOIN documents d ON d.id = dc.document_id
-                    WHERE dc.user_id = :user_id
+                    WHERE dc.user_id = CAST(:user_id AS uuid)
                       AND (1 - (dc.embedding <=> CAST(:query_vec AS vector))) > :threshold
                     ORDER BY dc.embedding <=> CAST(:query_vec AS vector) ASC
                     LIMIT :top_k;
@@ -109,6 +109,66 @@ class VectorStoreService:
 
         scored.sort(key=lambda x: x["similarity"], reverse=True)
         return scored[:top_k]
+
+    def save_chunks_batch(
+        self,
+        db: Session,
+        chunks_data: List[Dict[str, Any]],
+        embeddings: List[List[float]],
+        document_id: str,
+        user_id: str,
+    ) -> int:
+        """
+        Saves dense vector chunks into document_chunks table.
+        Uses native pgvector CAST(:embedding AS vector) when on PostgreSQL,
+        and JSON list serialization when on SQLite.
+        """
+        import uuid
+        bind = db.get_bind()
+        dialect_name = bind.dialect.name
+
+        if dialect_name == "postgresql":
+            insert_sql = text("""
+                INSERT INTO document_chunks (
+                    id, document_id, user_id, chunk_index, content, page_number, token_count, embedding
+                ) VALUES (
+                    :id, :document_id, :user_id, :chunk_index, :content, :page_number, :token_count, CAST(:embedding AS vector)
+                )
+            """)
+            batch_params = []
+            for i, c in enumerate(chunks_data):
+                vec_str = "[" + ",".join(f"{x:.6f}" for x in embeddings[i]) + "]"
+                batch_params.append({
+                    "id": str(uuid.uuid4()),
+                    "document_id": str(document_id),
+                    "user_id": str(user_id),
+                    "chunk_index": c["chunk_index"],
+                    "content": c["content"],
+                    "page_number": c.get("page_number", 1),
+                    "token_count": c.get("token_count", 0),
+                    "embedding": vec_str,
+                })
+            db.execute(insert_sql, batch_params)
+            db.commit()
+            return len(batch_params)
+        else:
+            chunk_objs = []
+            for i, c in enumerate(chunks_data):
+                chunk_objs.append(
+                    DocumentChunk(
+                        id=str(uuid.uuid4()),
+                        document_id=str(document_id),
+                        user_id=str(user_id),
+                        chunk_index=c["chunk_index"],
+                        content=c["content"],
+                        page_number=c.get("page_number", 1),
+                        token_count=c.get("token_count", 0),
+                        embedding=embeddings[i],
+                    )
+                )
+            db.bulk_save_objects(chunk_objs)
+            db.commit()
+            return len(chunk_objs)
 
 
 vector_store = VectorStoreService()

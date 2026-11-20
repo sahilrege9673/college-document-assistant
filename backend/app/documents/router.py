@@ -2,16 +2,18 @@ import re
 import uuid
 import logging
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+import pymupdf as fitz
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
 from sqlalchemy.orm import Session
 from app.config import settings
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.models import User, Document, DocumentChunk
 from app.schemas import DocumentResponse, DocumentStatusResponse
 from app.auth.dependencies import get_current_user
-from app.documents.parser import extract_text_from_pdf, PDFExtractionError, ScannedPDFError
+from app.documents.parser import extract_text_from_pdf, PDFExtractionError
 from app.documents.chunker import chunk_document_pages
 from app.rag.embeddings import embedding_service
+from app.rag.vector_store import vector_store
 from app.utils.storage import storage_service
 
 logger = logging.getLogger("app.documents")
@@ -26,16 +28,73 @@ def sanitize_filename(name: str) -> str:
     return clean or "uploaded_document.pdf"
 
 
+def process_document_background(doc_id: str, content: bytes, user_id: str, clean_name: str):
+    """
+    Asynchronous background worker: parses, chunks, generates embeddings,
+    and indexes document into pgvector without blocking client HTTP request.
+    """
+    db = SessionLocal()
+    try:
+        pages, total_pages, total_chars = extract_text_from_pdf(content)
+        chunks_data = chunk_document_pages(
+            pages=pages,
+            chunk_size=settings.CHUNK_SIZE,
+            overlap=settings.CHUNK_OVERLAP,
+        )
+
+        if not chunks_data:
+            doc = db.query(Document).filter(Document.id == doc_id).first()
+            if doc:
+                doc.status = "failed"
+                doc.error_message = "No readable text or diagram content could be extracted from this document."
+                db.commit()
+            return
+
+        texts_to_embed = [c["content"] for c in chunks_data]
+        embeddings = embedding_service.embed_batch(texts_to_embed)
+
+        vector_store.save_chunks_batch(
+            db=db,
+            chunks_data=chunks_data,
+            embeddings=embeddings,
+            document_id=doc_id,
+            user_id=user_id,
+        )
+
+        doc = db.query(Document).filter(Document.id == doc_id).first()
+        if doc:
+            doc.chunk_count = len(chunks_data)
+            doc.page_count = total_pages
+            doc.status = "ready"
+            db.commit()
+            logger.info(f"Background indexing completed for '{clean_name}': {len(chunks_data)} chunks ready.")
+
+    except Exception as e:
+        logger.error(f"Background indexing failed for '{clean_name}': {e}", exc_info=True)
+        try:
+            doc = db.query(Document).filter(Document.id == doc_id).first()
+            if doc:
+                doc.status = "failed"
+                doc.error_message = f"Indexing failed: {str(e)}"
+                db.commit()
+        except Exception:
+            pass
+    finally:
+        db.close()
+
+
 @router.post("/upload", response_model=DocumentResponse, status_code=status.HTTP_201_CREATED)
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
-    Validates, extracts, chunks, generates embeddings, and indexes an uploaded PDF document.
+    Accepts syllabus/notes PDF (up to 100MB), validates structure, stores file,
+    and dispatches non-blocking async background indexing into pgvector.
     """
-    # 1. Validate file extension and MIME type
+    # 1. Validate file extension
     clean_name = sanitize_filename(file.filename or "document.pdf")
     if not clean_name.lower().endswith(".pdf"):
         raise HTTPException(
@@ -43,29 +102,32 @@ async def upload_document(
             detail="Only PDF documents are supported (.pdf)."
         )
 
-    # 2. Read file contents and check size limit (10MB)
+    # 2. Read file contents and check size limit (100MB configurable)
     try:
         content = await file.read()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to read file: {e}")
 
     file_size = len(content)
+    max_mb = settings.MAX_FILE_SIZE_BYTES // (1024 * 1024)
     if file_size > settings.MAX_FILE_SIZE_BYTES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File exceeds maximum allowed size of 10 MB (File size: {file_size / (1024*1024):.1f} MB)."
+            detail=f"File exceeds maximum allowed size of {max_mb} MB (File size: {file_size / (1024*1024):.1f} MB)."
         )
 
     if file_size < 100:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Uploaded file is empty or corrupted.")
 
-    # 3. Text Extraction with PyMuPDF
+    # 3. Quick structural validation and page counting with PyMuPDF
     try:
-        pages, total_pages, total_chars = extract_text_from_pdf(content)
-    except ScannedPDFError as spe:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(spe))
-    except PDFExtractionError as pee:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(pee))
+        quick_doc = fitz.open(stream=content, filetype="pdf")
+        total_pages = len(quick_doc)
+        quick_doc.close()
+        if total_pages == 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="PDF contains 0 pages.")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid or corrupted PDF: {e}")
 
     # 4. Upload raw PDF to Supabase Storage or local fallback
     doc_id = str(uuid.uuid4())
@@ -75,10 +137,10 @@ async def upload_document(
         content_type="application/pdf",
     )
 
-    # 5. Create initial Document record
+    # 5. Create initial Document record in 'processing' state
     document = Document(
         id=doc_id,
-        user_id=current_user.id,
+        user_id=str(current_user.id),
         file_name=clean_name,
         storage_path=storage_path,
         file_size=file_size,
@@ -90,54 +152,14 @@ async def upload_document(
     db.commit()
     db.refresh(document)
 
-    # 6. Chunk text and generate dense vector embeddings
-    try:
-        chunks_data = chunk_document_pages(
-            pages=pages,
-            chunk_size=settings.CHUNK_SIZE,
-            overlap=settings.CHUNK_OVERLAP,
-        )
-
-        if not chunks_data:
-            document.status = "failed"
-            document.error_message = "No readable text chunks could be produced from this document."
-            db.commit()
-            return document
-
-        # Generate embeddings in batch
-        texts_to_embed = [c["content"] for c in chunks_data]
-        embeddings = embedding_service.embed_batch(texts_to_embed)
-
-        # Batch insert chunks
-        chunk_objects = []
-        for i, c in enumerate(chunks_data):
-            chunk_objects.append(
-                DocumentChunk(
-                    id=str(uuid.uuid4()),
-                    document_id=document.id,
-                    user_id=current_user.id,
-                    chunk_index=c["chunk_index"],
-                    content=c["content"],
-                    page_number=c["page_number"],
-                    token_count=c["token_count"],
-                    embedding=embeddings[i],
-                )
-            )
-
-        db.bulk_save_objects(chunk_objects)
-
-        # Update document ready status
-        document.chunk_count = len(chunks_data)
-        document.status = "ready"
-        db.commit()
-        db.refresh(document)
-        logger.info(f"Successfully processed '{clean_name}' into {len(chunks_data)} chunks.")
-
-    except Exception as e:
-        logger.error(f"Error during chunking/embedding of {clean_name}: {e}")
-        document.status = "failed"
-        document.error_message = f"Indexing failed: {str(e)}"
-        db.commit()
+    # 6. Dispatch async non-blocking parsing, chunking & vector embedding
+    background_tasks.add_task(
+        process_document_background,
+        doc_id=doc_id,
+        content=content,
+        user_id=str(current_user.id),
+        clean_name=clean_name,
+    )
 
     return document
 

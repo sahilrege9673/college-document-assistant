@@ -1,6 +1,6 @@
 import math
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.models import DocumentChunk, Document
@@ -31,10 +31,12 @@ class VectorStoreService:
         user_id: str,
         query_vector: List[float],
         top_k: int = 5,
-        threshold: float = 0.20,
+        threshold: float = 0.12,
+        document_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
-        Retrieves the top-K most similar document chunks for a given user.
+        Retrieves the top-K most similar document chunks for a given user,
+        optionally filtered to a single document.
         """
         bind = db.get_bind()
         dialect_name = bind.dialect.name
@@ -42,9 +44,9 @@ class VectorStoreService:
         # If connected to PostgreSQL with pgvector enabled
         if dialect_name == "postgresql":
             try:
-                # Format vector as string for pgvector: '[0.1, 0.2, ...]'
                 vec_str = "[" + ",".join(f"{x:.6f}" for x in query_vector) + "]"
-                sql = text("""
+                doc_filter_clause = "AND dc.document_id = CAST(:document_id AS uuid)" if document_id else ""
+                sql = text(f"""
                     SELECT 
                         dc.id,
                         dc.document_id,
@@ -55,19 +57,21 @@ class VectorStoreService:
                     FROM document_chunks dc
                     JOIN documents d ON d.id = dc.document_id
                     WHERE dc.user_id = CAST(:user_id AS uuid)
+                      {doc_filter_clause}
                       AND (1 - (dc.embedding <=> CAST(:query_vec AS vector))) > :threshold
                     ORDER BY dc.embedding <=> CAST(:query_vec AS vector) ASC
                     LIMIT :top_k;
                 """)
-                result = db.execute(
-                    sql,
-                    {
-                        "query_vec": vec_str,
-                        "user_id": user_id,
-                        "threshold": threshold,
-                        "top_k": top_k,
-                    }
-                )
+                params = {
+                    "query_vec": vec_str,
+                    "user_id": user_id,
+                    "threshold": threshold,
+                    "top_k": top_k,
+                }
+                if document_id:
+                    params["document_id"] = document_id
+
+                result = db.execute(sql, params)
                 rows = result.fetchall()
                 if rows:
                     return [
@@ -85,12 +89,15 @@ class VectorStoreService:
                 logger.warning(f"PostgreSQL pgvector query error ({e}). Falling back to ORM cosine scan.")
 
         # Universal fallback (SQLite / standard PostgreSQL table scan)
-        chunks = (
+        query = (
             db.query(DocumentChunk, Document.file_name)
             .join(Document, Document.id == DocumentChunk.document_id)
             .filter(DocumentChunk.user_id == user_id)
-            .all()
         )
+        if document_id:
+            query = query.filter(DocumentChunk.document_id == document_id)
+
+        chunks = query.all()
 
         scored = []
         for chunk, file_name in chunks:

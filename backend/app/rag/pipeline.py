@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 from app.fine_tuned_model.classifier import classifier_service
 from app.rag.embeddings import embedding_service
@@ -32,7 +32,7 @@ class RAGPipeline:
     6. Structured Source Citation Formatting
     """
 
-    def process_query(self, db: Session, user_id: str, question: str) -> Dict[str, Any]:
+    def process_query(self, db: Session, user_id: str, question: str, document_id: Optional[str] = None) -> Dict[str, Any]:
         # Step 1: Detect intent
         detected_intent = classifier_service.classify(question)
         logger.info(f"User Query: '{question}' -> Detected Intent: {detected_intent}")
@@ -50,7 +50,8 @@ class RAGPipeline:
             user_id=user_id,
             query_vector=query_vector,
             top_k=5,
-            threshold=0.12
+            threshold=0.10,
+            document_id=document_id,
         )
 
         # Handle queries with no relevant college documents found
@@ -71,6 +72,8 @@ class RAGPipeline:
                 "document_name": chunk["file_name"],
                 "page_number": chunk.get("page_number", 1),
                 "chunk_preview": content_preview,
+                "chunk_id": chunk.get("id"),
+                "similarity": round(chunk.get("similarity", 0.0), 4),
             })
 
         # If question is classified as completely irrelevant, immediately return safe grounded refusal

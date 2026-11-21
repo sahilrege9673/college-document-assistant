@@ -17,12 +17,17 @@ export default function Navbar({ onMenuToggle }) {
           <Menu className="w-5 h-5" />
         </button>
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shadow-xs">
             🎓
           </div>
-          <span className="font-semibold text-slate-900 tracking-tight hidden sm:inline-block">
-            College Document Assistant
-          </span>
+          <div className="flex items-center space-x-1.5">
+            <span className="font-extrabold text-slate-900 tracking-tight text-base sm:text-lg">
+              OmniScholar
+            </span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200">
+              AI 2.0
+            </span>
+          </div>
         </div>
       </div>
 

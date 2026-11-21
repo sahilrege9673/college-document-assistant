@@ -71,6 +71,9 @@ class Document(Base):
     chunk_count = Column(Integer, default=0)
     status = Column(String(30), default="processing", nullable=False)  # 'processing', 'ready', 'failed'
     error_message = Column(Text, nullable=True)
+    summary = Column(Text, nullable=True)
+    suggested_questions = Column(JSON, default=list)
+    detected_topics = Column(JSON, default=list)
     created_at = Column(DateTime(timezone=True), default=get_utc_now)
 
     # Relationships

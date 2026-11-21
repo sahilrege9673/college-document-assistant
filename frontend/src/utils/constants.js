@@ -41,14 +41,18 @@ export const INTENT_META = {
   },
 };
 
+export const APP_NAME = "OmniScholar AI";
+export const APP_TAGLINE = "Autonomous Academic Intelligence & Multimodal Cognitive RAG Platform";
+export const APP_VERSION = "2.0.0 Pro";
+
 export const MAX_FILE_SIZE_MB = 100;
-export const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB
+export const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100 MB per file
 
 export const SUGGESTED_QUESTIONS = [
-  "What topics are included in Unit 2?",
-  "When is the internal assessment?",
-  "What are the assignment submission rules?",
-  "Explain the attendance policy and minimum percentage.",
-  "What is the passing criteria for semester exams?",
-  "What is the fee payment deadline?",
+  "What is the passing criteria and examination scheme for this semester?",
+  "What are the major topics covered in Unit 1 and Unit 2?",
+  "What are the expected Course Outcomes (COs) and objectives?",
+  "What are the prescribed reference textbooks and lab practicals?",
+  "Explain the internal assessment and term-work marking guidelines.",
+  "What are the attendance requirements and condonation rules?",
 ];

@@ -3,6 +3,7 @@ import Navbar from '../components/common/Navbar';
 import Sidebar from '../components/common/Sidebar';
 import StatCard from '../components/admin/StatCard';
 import GlobalDocTable from '../components/admin/GlobalDocTable';
+import ChunkInspectorModal from '../components/documents/ChunkInspectorModal';
 import Modal from '../components/common/Modal';
 import Toast from '../components/common/Toast';
 import { adminAPI } from '../api/admin';
@@ -14,6 +15,7 @@ export default function AdminPage() {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingDoc, setDeletingDoc] = useState(null);
+  const [inspectDoc, setInspectDoc] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'info' });
 
@@ -143,11 +145,18 @@ export default function AdminPage() {
             <GlobalDocTable
               documents={documents}
               onDelete={(d) => setDeletingDoc(d)}
+              onInspectChunks={(d) => setInspectDoc(d)}
               loading={loading}
             />
           </div>
         </main>
       </div>
+
+      <ChunkInspectorModal
+        isOpen={!!inspectDoc}
+        document={inspectDoc}
+        onClose={() => setInspectDoc(null)}
+      />
 
       <Modal
         isOpen={Boolean(deletingDoc)}

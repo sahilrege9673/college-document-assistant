@@ -23,8 +23,10 @@ export const chatAPI = {
     return res.data;
   },
 
-  ask: async (chatId, question) => {
-    const res = await api.post(`/api/chats/${chatId}/ask`, { question });
+  ask: async (chatId, question, documentId = null) => {
+    const payload = { question };
+    if (documentId) payload.document_id = documentId;
+    const res = await api.post(`/api/chats/${chatId}/ask`, payload);
     return res.data;
   },
 };

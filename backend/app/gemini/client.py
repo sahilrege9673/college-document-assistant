@@ -108,5 +108,72 @@ class GeminiClient:
 
         return ""
 
+    def analyze_document_overview(self, sample_text: str, file_name: str = "") -> dict:
+        """
+        Autonomously analyzes document content to extract:
+        1. A concise executive summary
+        2. Key academic topics/modules covered
+        3. 4-6 high-impact featured questions grounded in the content
+        """
+        default_result = {
+            "summary": f"Comprehensive academic material for '{file_name or 'Uploaded Document'}', covering syllabus units, course outcomes, and evaluation guidelines.",
+            "detected_topics": ["Curriculum Overview", "Core Syllabus Units", "Course Outcomes", "Examination Scheme", "Reference Materials"],
+            "suggested_questions": [
+                "What is the examination scheme and passing criteria for this course?",
+                "What are the major topics covered in Unit 1 and Unit 2?",
+                "What are the expected Course Outcomes (COs) and objectives?",
+                "What are the prescribed reference textbooks and lab practicals?",
+                "Explain the internal assessment and term-work marking guidelines."
+            ],
+        }
+
+        if not self._configured or not sample_text.strip():
+            return default_result
+
+        try:
+            import json
+            import re
+            model = self.genai.GenerativeModel(
+                self.model_name,
+                generation_config={
+                    "temperature": 0.3,
+                    "max_output_tokens": 800,
+                    "response_mime_type": "application/json",
+                }
+            )
+            prompt = (
+                f"You are an academic document intelligence analyzer. Analyze the following excerpt from '{file_name}':\n\n"
+                f"--- BEGIN DOCUMENT EXCERPT ---\n{sample_text[:6000]}\n--- END EXCERPT ---\n\n"
+                "Respond with a valid JSON object matching this schema exactly:\n"
+                "{\n"
+                '  "summary": "Concise 2-sentence summary of the subject, course pattern, and academic scope.",\n'
+                '  "detected_topics": ["Topic 1", "Topic 2", "Topic 3", "Topic 4", "Topic 5"],\n'
+                '  "suggested_questions": [\n'
+                '     "Specific question 1 answerable directly from this syllabus/notes",\n'
+                '     "Specific question 2 about units or concepts",\n'
+                '     "Specific question 3 about passing criteria or exams",\n'
+                '     "Specific question 4 about practicals or assignments",\n'
+                '     "Specific question 5 about course outcomes or textbooks"\n'
+                "  ]\n"
+                "}"
+            )
+            response = model.generate_content(prompt)
+            if response and response.text:
+                cleaned_text = response.text.strip()
+                # Remove code blocks if present
+                if cleaned_text.startswith("```"):
+                    cleaned_text = re.sub(r"^```(?:json)?\s*", "", cleaned_text)
+                    cleaned_text = re.sub(r"\s*```$", "", cleaned_text)
+                data = json.loads(cleaned_text)
+                return {
+                    "summary": data.get("summary", default_result["summary"]),
+                    "detected_topics": data.get("detected_topics", default_result["detected_topics"])[:6],
+                    "suggested_questions": data.get("suggested_questions", default_result["suggested_questions"])[:6],
+                }
+        except Exception as e:
+            logger.warning(f"Gemini document overview analysis fallback ({e})")
+
+        return default_result
+
 
 gemini_client = GeminiClient()

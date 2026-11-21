@@ -1,8 +1,8 @@
 import React from 'react';
-import { FileText, Trash2, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
+import { FileText, Trash2, CheckCircle2, Clock, AlertTriangle, Database } from 'lucide-react';
 import { formatBytes, formatDate } from '../../utils/formatters';
 
-export default function GlobalDocTable({ documents, onDelete, loading = false }) {
+export default function GlobalDocTable({ documents, onDelete, onInspectChunks, loading = false }) {
   if (loading) {
     return (
       <div className="p-8 text-center text-sm text-slate-500">
@@ -67,7 +67,14 @@ export default function GlobalDocTable({ documents, onDelete, loading = false })
                   </span>
                 </td>
                 <td className="p-4 text-slate-400">{formatDate(doc.created_at)}</td>
-                <td className="p-4 text-right">
+                <td className="p-4 text-right space-x-1">
+                  <button
+                    onClick={() => onInspectChunks?.(doc)}
+                    className="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                    title="Inspect Chunks"
+                  >
+                    <Database className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={() => onDelete(doc)}
                     className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"

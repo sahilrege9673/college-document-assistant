@@ -5,8 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # App Settings
-    APP_NAME: str = "College Document Assistant API"
-    APP_VERSION: str = "1.0.0"
+    APP_NAME: str = "OmniScholar AI — Academic Intelligence & Cognitive RAG Platform"
+    APP_VERSION: str = "2.0.0"
     DEBUG: bool = False
 
     # Database

@@ -57,6 +57,9 @@ class DocumentResponse(AppBaseModel):
     chunk_count: int
     status: str
     error_message: Optional[str] = None
+    summary: Optional[str] = None
+    suggested_questions: Optional[List[str]] = []
+    detected_topics: Optional[List[str]] = []
     created_at: datetime
 
 
@@ -66,6 +69,25 @@ class DocumentStatusResponse(AppBaseModel):
     status: str
     chunk_count: int
     error_message: Optional[str] = None
+    summary: Optional[str] = None
+    suggested_questions: Optional[List[str]] = []
+    detected_topics: Optional[List[str]] = []
+
+
+class DocumentChunkResponse(AppBaseModel):
+    id: str
+    document_id: str
+    chunk_index: int
+    page_number: int
+    token_count: int
+    content: str
+    embedding_preview: Optional[List[float]] = []
+
+
+class BatchUploadResponse(AppBaseModel):
+    total_queued: int
+    uploaded: List[DocumentResponse]
+    failed: List[dict] = []
 
 
 # ==============================================================================
@@ -75,10 +97,13 @@ class SourceItem(AppBaseModel):
     document_name: str
     page_number: Optional[int] = 1
     chunk_preview: str
+    chunk_id: Optional[str] = None
+    similarity: Optional[float] = None
 
 
 class AskQuestionRequest(BaseModel):
-    question: str = Field(..., min_length=2, max_length=1000)
+    question: str = Field(..., min_length=2, max_length=2000)
+    document_id: Optional[str] = None
 
 
 class AskQuestionResponse(AppBaseModel):

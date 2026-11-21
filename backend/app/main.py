@@ -33,6 +33,17 @@ async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("Database schema verified/created.")
+        
+        # Non-blocking schema evolution for existing SQLite or PostgreSQL deployments
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            for col, col_type in [("summary", "TEXT"), ("suggested_questions", "JSON"), ("detected_topics", "JSON")]:
+                try:
+                    conn.execute(text(f"ALTER TABLE documents ADD COLUMN {col} {col_type};"))
+                    conn.commit()
+                except Exception:
+                    pass
+            logger.info("Database schema columns verified/updated.")
     except Exception as e:
         logger.warning(f"Database schema auto-creation note: {e}")
 

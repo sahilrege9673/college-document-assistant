@@ -44,6 +44,14 @@ def run_all_tests():
     # 1. Database Initialization
     print("\n[Test 1] Verifying Database Schema & Table Creation...")
     Base.metadata.create_all(bind=engine)
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        for col, col_type in [("summary", "TEXT"), ("suggested_questions", "JSON"), ("detected_topics", "JSON")]:
+            try:
+                conn.execute(text(f"ALTER TABLE documents ADD COLUMN {col} {col_type};"))
+                conn.commit()
+            except Exception:
+                pass
     db = SessionLocal()
     print("✅ Database tables successfully created/verified.")
 

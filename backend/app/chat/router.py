@@ -109,6 +109,8 @@ def get_chat(
                         document_name=s.get("document_name", "Unknown"),
                         page_number=s.get("page_number", 1),
                         chunk_preview=s.get("chunk_preview", ""),
+                        chunk_id=s.get("chunk_id"),
+                        similarity=s.get("similarity"),
                     )
                 )
 
@@ -188,11 +190,12 @@ def ask_question(
         new_title = question[:45] + ("..." if len(question) > 45 else "")
         session.title = new_title
 
-    # 2. Run through RAG Pipeline
+    # 2. Run through RAG Pipeline (supports optional document filtering)
     rag_result = rag_pipeline.process_query(
         db=db,
         user_id=current_user.id,
         question=question,
+        document_id=data.document_id,
     )
 
     answer_text = rag_result["answer"]
@@ -215,9 +218,11 @@ def ask_question(
     # 4. Construct response
     sources_response = [
         SourceItem(
-            document_name=s["document_name"],
+            document_name=s.get("document_name", "Document"),
             page_number=s.get("page_number", 1),
-            chunk_preview=s["chunk_preview"],
+            chunk_preview=s.get("chunk_preview", ""),
+            chunk_id=s.get("chunk_id"),
+            similarity=s.get("similarity"),
         )
         for s in sources_data
     ]

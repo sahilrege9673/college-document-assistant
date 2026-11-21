@@ -62,6 +62,16 @@ async def lifespan(app: FastAPI):
             db.add(admin_user)
             db.commit()
             logger.info(f"Initialized pre-configured admin user: {admin_email}")
+
+        # 3. Recover any documents stuck in 'processing' from server crash/restart
+        from app.models import Document
+        stuck_docs = db.query(Document).filter(Document.status == "processing").all()
+        if stuck_docs:
+            for s_doc in stuck_docs:
+                s_doc.status = "failed"
+                s_doc.error_message = "Indexing was interrupted by server restart. Please delete and re-upload this document."
+            db.commit()
+            logger.info(f"Cleaned up {len(stuck_docs)} interrupted processing document(s).")
     except Exception as e:
         logger.warning(f"Admin auto-seed error: {e}")
     finally:

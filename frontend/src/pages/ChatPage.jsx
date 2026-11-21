@@ -150,7 +150,12 @@ export default function ChatPage() {
       setMessages((prev) => [...prev, assistantMsg]);
     } catch (err) {
       const errorMsg =
-        err.response?.data?.detail || 'An error occurred while communicating with the model.';
+        err.response?.data?.detail ||
+        (err.response?.status === 502
+          ? 'The backend server is warming up or indexing documents. Please try asking again in a few moments.'
+          : err.message === 'Network Error'
+          ? 'Cannot connect to the backend server. Please verify your connection.'
+          : err.message || 'An error occurred while communicating with the model.');
       setMessages((prev) => [
         ...prev,
         {

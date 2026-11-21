@@ -37,22 +37,33 @@ class RAGPipeline:
         detected_intent = classifier_service.classify(question)
         logger.info(f"User Query: '{question}' -> Detected Intent: {detected_intent}")
 
-        # Step 2: Augment query with intent keywords for higher recall
-        enrichment = INTENT_KEYWORD_ENRICHMENT.get(detected_intent, "")
-        augmented_query = f"{question} {enrichment}".strip() if enrichment else question
+        # Step 2: Primary dense vector embedding using raw question to preserve exact semantic focus
+        query_vector = embedding_service.embed_text(question.strip())
 
-        # Step 3: Generate embedding vector (384 dimensions)
-        query_vector = embedding_service.embed_text(augmented_query)
-
-        # Step 4: Retrieve top 5 most similar chunks from pgvector
+        # Step 3: Retrieve top 5 most similar chunks from pgvector
         matched_chunks = vector_store.search_similar_chunks(
             db=db,
             user_id=user_id,
             query_vector=query_vector,
             top_k=5,
-            threshold=0.10,
+            threshold=0.05,
             document_id=document_id,
         )
+
+        # Optional intent-guided second chance retrieval if raw query returned 0 chunks
+        if not matched_chunks and detected_intent != "irrelevant_question":
+            enrichment = INTENT_KEYWORD_ENRICHMENT.get(detected_intent, "")
+            if enrichment:
+                augmented_query = f"{question} {enrichment}".strip()
+                augmented_vector = embedding_service.embed_text(augmented_query)
+                matched_chunks = vector_store.search_similar_chunks(
+                    db=db,
+                    user_id=user_id,
+                    query_vector=augmented_vector,
+                    top_k=5,
+                    threshold=0.03,
+                    document_id=document_id,
+                )
 
         # Handle queries with no relevant college documents found
         if not matched_chunks:

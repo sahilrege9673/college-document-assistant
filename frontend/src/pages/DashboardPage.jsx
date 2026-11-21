@@ -59,6 +59,27 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
+  // Real-time polling on Dashboard if any document is processing
+  useEffect(() => {
+    const hasProcessing = documents.some((d) => d.status === 'processing');
+    if (!hasProcessing) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const [docsData, questionsData] = await Promise.all([
+          documentsAPI.list(0, 10),
+          documentsAPI.getFeaturedQuestions().catch(() => []),
+        ]);
+        setDocuments(docsData || []);
+        if (questionsData?.length) setFeaturedQuestions(questionsData);
+      } catch {
+        // Silent catch during background sync
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [documents]);
+
   const handleStartNewChat = async (initialQuestion = null, documentId = null) => {
     try {
       const title = initialQuestion
